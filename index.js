@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.esabfel.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
@@ -18,11 +18,32 @@ const client = new MongoClient(uri, {
   },
 });
 
-console.log(uri);
-
 async function run() {
   try {
     await client.connect();
+
+    const productCollection = client.db("productsDB").collection("products");
+
+    app.get("/products/", async (req, res) => {
+      const cursor = productCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+      console.log(req);
+    });
+
+    app.get("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await productCollection.findOne(query);
+      res.send(result);
+    });
+
+    app.post("/products", async (req, res) => {
+      const product = req.body;
+      console.log(product);
+      const result = await productCollection.insertOne(product);
+      res.send(result);
+    });
 
     await client.db("admin").command({ ping: 1 });
     console.log(
@@ -41,6 +62,3 @@ app.get("/", (req, res) => {
 app.listen(port, () => {
   console.log(`serving is working on ${port}`);
 });
-
-// automotive-shop
-// lwtoHuVsHO0CNjYv
