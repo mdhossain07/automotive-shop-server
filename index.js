@@ -87,8 +87,10 @@ async function run() {
 
     app.delete("/cart/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: new ObjectId(id) };
+      const query = { _id: id };
+      console.log(query);
       const result = await cartCollection.deleteOne(query);
+      console.log(result);
       res.send(result);
     });
 
