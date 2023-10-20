@@ -20,7 +20,7 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    await client.connect();
+    // await client.connect();
 
     const productCollection = client.db("productsDB").collection("products");
     const cartCollection = client.db("productsDB").collection("cart");
@@ -87,7 +87,7 @@ async function run() {
 
     app.delete("/cart/:id", async (req, res) => {
       const id = req.params.id;
-      const query = { _id: id };
+      const query = { _id: new ObjectId(id) };
       console.log(query);
       const result = await cartCollection.deleteOne(query);
       console.log(result);
